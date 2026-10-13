@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 5rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">Política de privacidad</span>
+  </nav>
+
+  <article style="max-width:70ch">
+    <h1 style="font-size:var(--step-3)">Política de privacidad</h1>
+    <p class="text-muted" style="margin-top:1rem">Explicamos qué datos recogemos, para qué los usamos y cómo los protegemos.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Datos que recogemos</h2>
+      <p style="margin-top:.75rem">Para procesar tu pedido necesitamos tu nombre, email, teléfono y dirección de despacho. Si creas una cuenta, guardamos además tu nombre de usuario y una versión cifrada (hash) de tu contraseña: nunca almacenamos la contraseña en texto plano.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Datos de pago</h2>
+      <p style="margin-top:.75rem">No recibimos, procesamos ni almacenamos los datos de tu tarjeta. El pago ocurre íntegramente en la plataforma de Transbank. De la transacción solo conservamos el identificador, el monto, el código de autorización y los últimos cuatro dígitos de la tarjeta, información necesaria para la conciliación contable y el soporte postventa.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Para qué usamos tus datos</h2>
+      <p style="margin-top:.75rem">Exclusivamente para procesar y despachar tu pedido, darte soporte y cumplir obligaciones legales y tributarias. No vendemos ni cedemos tus datos a terceros con fines publicitarios.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Cookies</h2>
+      <p style="margin-top:.75rem">Usamos cookies estrictamente necesarias para mantener tu sesión y tu carrito, y para la protección contra CSRF. No usamos cookies de seguimiento publicitario.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Tus derechos</h2>
+      <p style="margin-top:.75rem">Puedes solicitar el acceso, la rectificación o la eliminación de tus datos personales escribiéndonos desde la página de contacto, conforme a la Ley 19.628 sobre protección de la vida privada.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Seguridad</h2>
+      <p style="margin-top:.75rem">El sitio se sirve íntegramente sobre HTTPS, aplica cabeceras de seguridad estrictas y protección CSRF en todos los formularios.</p>
+    <p class="text-muted" style="margin-top:2.5rem;font-size:var(--step--1)">
+      Última actualización: {% now "F Y" %}.
+      ¿Dudas? Escríbenos desde <a href="{% url 'store:contact' %}" style="text-decoration:underline">contacto</a>.
+    </p>
+  </article>
+</div>
+{% endblock %}

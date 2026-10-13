@@ -1,0 +1,26 @@
+{% load store_extras %}Hola {{ order.customer_first_name }},
+
+¡Gracias por tu compra en {{ store.store_name }}! Tu pago fue aprobado.
+
+Orden: {{ order.order_number }}
+Fecha: {{ order.paid_at|default:order.created_at|date:"d/m/Y H:i" }}
+
+PRODUCTOS
+{% for item in order.items.all %}- {{ item.quantity }} x {{ item.product_name }} ({{ item.size }} / {{ item.color }}): {{ item.subtotal_formatted }}
+{% endfor %}
+Subtotal: {{ order.subtotal_formatted }}
+Despacho: {{ order.shipping_cost_formatted }}
+TOTAL:    {{ order.total_formatted }}
+
+DESPACHO
+{{ order.customer_full_name }}
+{{ order.full_shipping_address }}
+Plazo estimado: 2 a 5 días hábiles.
+
+Puedes ver tu pedido aquí:
+{{ order_link }}
+
+{% if store.contact_email %}¿Dudas? Responde este correo o escríbenos a {{ store.contact_email }}.{% endif %}
+
+{{ store.store_name }}{% if store.legal_name %}
+{{ store.legal_name }}{% if store.rut %} · RUT {{ store.rut }}{% endif %}{% endif %}

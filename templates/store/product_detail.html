@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static store_extras %}
+
+{% block page_id %}product{% endblock %}
+{% block og_type %}product{% endblock %}
+
+{% block extra_head %}
+{# Datos estructurados para los resultados enriquecidos de Google. #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.name|escapejs }}",
+  "description": "{{ meta_description|escapejs }}",
+  {% if product.main_image %}"image": "{{ product.main_image|escapejs }}",{% endif %}
+  "sku": "{{ product.sku|escapejs }}",
+  "brand": {"@type": "Brand", "name": "{{ store.store_name|escapejs }}"},
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "CLP",
+    "price": "{{ product.price }}",
+    "availability": "https://schema.org/{% if product.in_stock %}InStock{% else %}OutOfStock{% endif %}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}{{ product.get_absolute_url }}"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <a href="{% url 'store:product_list' %}">Catálogo</a> <span aria-hidden="true">/</span>
+    <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ product.name }}</span>
+  </nav>
+
+  <div class="product-detail" id="product-detail">
+    {# ===== Galería ===================================================== #}
+    <div>
+      <div class="gallery__main">
+        {% with images=product.gallery_images %}
+          {% if images %}
+            <img data-gallery-main src="{{ images.0 }}" alt="{{ product.name }}"
+                 width="900" height="1200" fetchpriority="high">
+          {% else %}
+            <img src="" alt="{{ product.name }}" width="900" height="1200">
+          {% endif %}
+
+          {% if images|length > 1 %}
+            <div class="gallery__thumbs">
+              {% for image in images %}
+                <button type="button"
+                        class="gallery__thumb {% if forloop.first %}is-active{% endif %}"
+                        data-gallery-thumb="{{ image }}"
+                        aria-label="Ver imagen {{ forloop.counter }}">
+                  <img src="{{ image }}" alt="" loading="lazy" width="150" height="200">
+                </button>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
+    {# ===== Información ================================================= #}
+    <div class="product-info">
+      <p class="eyebrow">{{ product.category.name }} · {{ product.get_gender_display }}</p>
+      <h1 style="font-size:var(--step-3)">{{ product.name }}</h1>
+
+      <div class="product-info__prices">
+        <span class="price">{{ product.price|clp }}</span>
+        {% if product.is_on_sale %}
+          <span class="price--old">{{ product.compare_price|clp }}</span>
+          <span class="badge badge--sale">-{{ product.discount_percentage }}%</span>
+        {% endif %}
+      </div>
+
+      {% if product.description %}
+        <p class="text-muted">{{ product.description|linebreaksbr }}</p>
+      {% endif %}
+
+      {% if variants %}
+        {# ===== Color ==================================================== #}
+        {% if colors %}
+        <div class="option-group">
+          <div class="option-group__head">
+            <span class="option-group__label">Color</span>
+            <span class="option-group__value" data-selected-color></span>
+          </div>
+          <div class="options" role="group" aria-label="Elegir color">
+            {% for color in colors %}
+              <button type="button" class="option option--color"
+                      data-color="{{ color.color }}" aria-pressed="false">
+                <span class="swatch-dot" style="background:{{ color.color_hex }}"></span>
+                {{ color.color }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {# ===== Talla ==================================================== #}
+        {% if sizes %}
+        <div class="option-group">
+          <div class="option-group__head">
+            <span class="option-group__label">Talla</span>
+            <span class="option-group__value" data-selected-size></span>
+          </div>
+          <div class="options" role="group" aria-label="Elegir talla">
+            {% for size in sizes %}
+              <button type="button" class="option" data-size="{{ size }}" aria-pressed="false">
+                {{ size }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <p class="stock-note" data-stock-note>Selecciona talla y color</p>
+
+        {# ===== Cantidad y compra ======================================== #}
+        <div class="option-group">
+          <div class="option-group__head">
+            <span class="option-group__label">Cantidad</span>
+          </div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+            <div class="qty">
+              <button type="button" data-qty-step="-1" aria-label="Quitar una unidad">−</button>
+              <label class="sr-only" for="qty">Cantidad</label>
+              <input id="qty" type="number" value="1" min="1" max="1"
+                     data-qty-input data-hard-max="10" inputmode="numeric">
+              <button type="button" data-qty-step="1" aria-label="Agregar una unidad">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:.75rem">
+          <button type="button" class="btn btn--primary btn--lg btn--block"
+                  data-add-to-cart disabled>
+            Selecciona talla y color
+          </button>
+          <a class="btn btn--outline btn--block" href="{% url 'cart:detail' %}">Ver carrito</a>
+        </div>
+      {% else %}
+        <p class="alert alert--warning">Este producto no tiene variantes disponibles.</p>
+      {% endif %}
+
+      {# ===== Detalles ==================================================== #}
+      <div class="accordion">
+        <details open>
+          <summary>Detalles del producto</summary>
+          <div class="accordion__body">
+            <dl class="data-list">
+              <div class="data-list__row"><dt>SKU</dt><dd>{{ product.sku }}</dd></div>
+              <div class="data-list__row"><dt>Categoría</dt><dd>{{ product.category.name }}</dd></div>
+              <div class="data-list__row"><dt>Género</dt><dd>{{ product.get_gender_display }}</dd></div>
+            </dl>
+          </div>
+        </details>
+        <details>
+          <summary>Envíos</summary>
+          <div class="accordion__body">
+            <p>Despacho a todo Chile en 2 a 5 días hábiles.
+              {% if store.free_shipping_enabled %}
+                Envío gratis en compras sobre {{ free_shipping_threshold|clp }};
+                bajo ese monto, el despacho cuesta {{ shipping_cost|clp }}.
+              {% elif shipping_cost %}
+                El despacho cuesta {{ shipping_cost|clp }}.
+              {% else %}
+                El despacho es gratis.
+              {% endif %}</p>
+          </div>
+        </details>
+        <details>
+          <summary>Cambios y devoluciones</summary>
+          <div class="accordion__body">
+            <p>Tienes 30 días corridos para cambiar talla o color, siempre que la
+              prenda esté sin uso y con su etiqueta.
+              <a href="{% url 'store:shipping' %}" style="text-decoration:underline">Ver política completa</a>.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  {# ===== Relacionados ================================================== #}
+  {% if related_products %}
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">También te puede servir</p>
+        <h2>Productos relacionados</h2>
+      </div>
+    </div>
+    <div class="product-grid">
+      {% for product in related_products %}
+        {% include 'partials/product_card.html' %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+
+{# Matriz de variantes para el JavaScript. `json_script` escapa < > & y no
+   cuenta como script en línea para la Content-Security-Policy. #}
+{{ variant_matrix|json_script:"variant-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/product.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,23 @@
+# Dependencias de producción de GYMFORGE.
+# Versiones fijadas para que el despliegue sea reproducible.
+
+# Framework
+Django==5.2.17
+
+# PostgreSQL (Supabase). psycopg 3 es el driver recomendado por Django 5.
+psycopg[binary]==3.3.5
+dj-database-url==3.1.2
+
+# Configuración por variables de entorno
+python-decouple==3.8
+
+# Servido de archivos estáticos
+whitenoise==6.12.0
+
+# Pasarela de pago oficial de Transbank
+transbank-sdk==6.1.0
+
+# Cliente HTTP. Llega como dependencia del SDK de Transbank, pero el proyecto
+# lo importa directamente (subida de fotos a Supabase Storage), así que se
+# declara de forma explícita.
+requests==2.34.2

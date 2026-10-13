@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load store_extras %}
+
+{% block page_id %}cart{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 4rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">Carrito</span>
+  </nav>
+
+  <h1 style="margin-bottom:2rem">Tu carrito</h1>
+
+  {% if cart.is_empty %}
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 2H2"/>
+        <circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/>
+      </svg>
+      <h2>Tu carrito está vacío</h2>
+      <p>Aún no has agregado productos. Explora el catálogo y encuentra tu próximo equipo de entrenamiento.</p>
+      <a class="btn btn--primary btn--lg" href="{% url 'store:product_list' %}">Ver productos</a>
+    </div>
+  {% else %}
+
+    {% if stock_issues %}
+      <div class="alert alert--warning" role="alert">
+        <div>
+          <strong>Revisa tu carrito antes de pagar</strong>
+          <ul style="margin-top:.5rem;padding-left:1.2rem">
+            {% for issue in stock_issues %}<li>{{ issue }}</li>{% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="cart-layout">
+      {# ===== Líneas ===================================================== #}
+      <div>
+        {% for item in cart %}
+          <div class="cart-line {% if not item.has_enough_stock %}is-unavailable{% endif %}"
+               data-cart-line="{{ item.variant.pk }}">
+            <a href="{{ item.product.get_absolute_url }}">
+              <img src="{{ item.product.main_image }}" alt="{{ item.product.name }}"
+                   loading="lazy" width="220" height="293">
+            </a>
+
+            <div>
+              <p class="product-card__cat">{{ item.product.category.name }}</p>
+              <h2 style="font-family:var(--font-body);font-size:var(--step-0);font-weight:600;text-transform:none;letter-spacing:0">
+                <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+              </h2>
+              <p class="text-muted" style="font-size:var(--step--1);margin-top:.25rem">
+                Talla {{ item.variant.get_size_display }} · {{ item.variant.color }}
+              </p>
+              <p class="text-muted" style="font-size:var(--step--1)">
+                {{ item.unit_price_formatted }} c/u
+              </p>
+
+              {% if not item.has_enough_stock %}
+                <p class="badge badge--danger" style="margin-top:.5rem">
+                  {% if item.variant.available_stock == 0 %}
+                    Agotado
+                  {% else %}
+                    Solo quedan {{ item.variant.available_stock }}
+                  {% endif %}
+                </p>
+              {% endif %}
+
+              <div class="cart-line__actions">
+                <div class="qty">
+                  <button type="button" data-qty-step="-1" aria-label="Quitar una unidad">−</button>
+                  <label class="sr-only" for="qty-{{ item.variant.pk }}">Cantidad de {{ item.product.name }}</label>
+                  <input id="qty-{{ item.variant.pk }}" type="number" data-qty-input
+                         value="{{ item.quantity }}" min="1" max="{{ item.max_quantity }}"
+                         inputmode="numeric">
+                  <button type="button" data-qty-step="1" aria-label="Agregar una unidad">+</button>
+                </div>
+
+                <button type="button" class="link-danger" data-remove-variant="{{ item.variant.pk }}">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+
+            <p class="price" data-line-subtotal>{{ item.subtotal_formatted }}</p>
+          </div>
+        {% endfor %}
+
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-top:1.5rem">
+          <a class="btn btn--outline btn--sm" href="{% url 'store:product_list' %}">Seguir comprando</a>
+          <form method="post" action="{% url 'cart:clear' %}">
+            {% csrf_token %}
+            <button type="submit" class="link-danger">Vaciar carrito</button>
+          </form>
+        </div>
+      </div>
+
+      {# ===== Resumen ==================================================== #}
+      <aside class="summary" aria-label="Resumen del pedido">
+        <h2 style="font-size:var(--step-1);margin-bottom:1rem">Resumen</h2>
+
+        {% if cart.free_shipping_available %}
+        {% if not cart.has_free_shipping %}
+          <p style="font-size:var(--step--1)" id="free-shipping-label">
+            Te faltan {{ cart.amount_for_free_shipping|clp }} para el envío gratis
+          </p>
+          <div class="progress">
+            <div class="progress__bar" id="free-shipping-bar"
+                 data-threshold="{{ free_shipping_threshold }}"
+                 style="width:{% widthratio cart.subtotal free_shipping_threshold 100 %}%"></div>
+          </div>
+        {% else %}
+          <p class="badge badge--success" id="free-shipping-label">¡Tienes envío gratis!</p>
+          <div class="progress">
+            <div class="progress__bar" id="free-shipping-bar"
+                 data-threshold="{{ free_shipping_threshold }}" style="width:100%"></div>
+          </div>
+        {% endif %}
+        {% endif %}
+
+        <div class="summary__row">
+          <span>Subtotal ({{ cart|length }} art.)</span>
+          <span id="cart-subtotal">{{ cart.subtotal|clp }}</span>
+        </div>
+        <div class="summary__row">
+          <span>Despacho</span>
+          <span id="cart-shipping">
+            {% if cart.has_free_shipping %}Gratis{% else %}{{ cart.shipping_cost|clp }}{% endif %}
+          </span>
+        </div>
+        <div class="summary__row summary__row--total">
+          <span>Total</span>
+          <span id="cart-total">{{ cart.total|clp }}</span>
+        </div>
+
+        <a class="btn btn--primary btn--block btn--lg" style="margin-top:1.5rem"
+           href="{% url 'orders:checkout' %}"
+           {% if not cart.is_purchasable %}aria-disabled="true" tabindex="-1"{% endif %}>
+          Finalizar compra
+        </a>
+
+        {% if not cart.is_purchasable %}
+          <p class="field__error" style="margin-top:.75rem">
+            Ajusta las cantidades marcadas para poder continuar.
+          </p>
+        {% endif %}
+
+        <p class="text-muted" style="font-size:0.78rem;margin-top:1rem;text-align:center">
+          Pago procesado por Webpay Plus. No almacenamos datos de tu tarjeta.
+        </p>
+      </aside>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

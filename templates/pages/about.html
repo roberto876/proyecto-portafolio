@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block page_id %}about{% endblock %}
+
+{% block content %}
+<section class="showcase" style="min-height:56vh">
+  <div class="showcase__media layer depth-0" data-depth="0" aria-hidden="true">
+    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&q=75&auto=format&fit=crop"
+         alt="" loading="eager" width="1920" height="1280">
+  </div>
+  <div class="container">
+    <div class="showcase__content">
+      <p class="eyebrow">Sobre nosotros</p>
+      <h1 data-reveal="curtain">No vendemos ropa.<br>Vendemos series.</h1>
+    </div>
+  </div>
+</section>
+
+<div class="container section">
+  <article style="max-width:70ch">
+    <p class="text-muted" style="font-size:var(--step-1)" data-reveal="up">
+      {{ store.store_name }} nació en un garaje de Santiago en 2021, cuando dos entrenadores
+      se cansaron de que las poleras se deformaran a la tercera lavada.
+    </p>
+
+    <h2 style="font-size:var(--step-2);margin-top:2.5rem" data-reveal="up">Cómo trabajamos</h2>
+    <p style="margin-top:.75rem" data-reveal="up">
+      Cada prenda pasa por un ciclo de prueba real: seis semanas de
+      entrenamiento con atletas del gimnasio con el que partimos. Si una costura
+      molesta, si el tejido retiene olor o si el corte limita un movimiento, la
+      prenda vuelve al taller. Solo llega a la tienda lo que sobrevive.
+    </p>
+
+    <h2 style="font-size:var(--step-2);margin-top:2.5rem" data-reveal="up">Materiales</h2>
+    <p style="margin-top:.75rem" data-reveal="up">
+      Trabajamos con poliéster reciclado y elastano de alta recuperación,
+      costuras planas para evitar rozaduras y acabados de secado rápido.
+      Priorizamos proveedores con certificación textil verificable.
+    </p>
+
+    <h2 style="font-size:var(--step-2);margin-top:2.5rem" data-reveal="up">Precio justo</h2>
+    <p style="margin-top:.75rem" data-reveal="up">
+      Vendemos directo, sin intermediarios ni tiendas físicas. Ese ahorro se
+      traslada al precio final en vez de al marketing.
+    </p>
+  </article>
+
+  <div class="stat-grid"
+       style="margin-top:4rem;background:var(--black);padding:3rem 1.5rem;border-radius:var(--radius-lg)">
+    <div data-reveal="up" data-reveal-index="0">
+      <p class="stat__value">2021</p><p class="stat__label">Año de fundación</p>
+    </div>
+    <div data-reveal="up" data-reveal-index="1">
+      <p class="stat__value">+12.000</p><p class="stat__label">Pedidos despachados</p>
+    </div>
+    <div data-reveal="up" data-reveal-index="2">
+      <p class="stat__value">16</p><p class="stat__label">Regiones con despacho</p>
+    </div>
+    <div data-reveal="up" data-reveal-index="3">
+      <p class="stat__value">6</p><p class="stat__label">Semanas de prueba por prenda</p>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:3rem">
+    <a class="btn btn--primary btn--lg" href="{% url 'store:product_list' %}">Ver la colección</a>
+  </div>
+</div>
+{% endblock %}

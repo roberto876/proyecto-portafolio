@@ -1,0 +1,57 @@
+{% load store_extras %}<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;color:#141414">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f2f2;padding:24px 0">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden">
+        <tr><td style="background:#0a0a0a;padding:24px;text-align:center">
+          <span style="color:#ffffff;font-size:26px;font-weight:bold;letter-spacing:1px">{% with parts=store.logo_parts %}{{ parts.0 }}<span style="color:#c8ff2e">{{ parts.1 }}</span>{% endwith %}</span>
+        </td></tr>
+        <tr><td style="padding:32px 28px 8px">
+          <h1 style="margin:0 0 8px;font-size:22px">¡Compra confirmada!</h1>
+          <p style="margin:0;color:#4a4a4a;line-height:1.5">
+            Hola {{ order.customer_first_name }}, tu pago fue aprobado. Ya estamos preparando tu pedido.
+          </p>
+        </td></tr>
+        <tr><td style="padding:16px 28px">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-radius:8px;padding:14px">
+            <tr><td style="color:#7a7a7a;font-size:13px">Orden</td><td align="right" style="font-weight:bold">{{ order.order_number }}</td></tr>
+            <tr><td style="color:#7a7a7a;font-size:13px;padding-top:6px">Fecha</td><td align="right" style="padding-top:6px">{{ order.paid_at|default:order.created_at|date:"d/m/Y H:i" }}</td></tr>
+          </table>
+        </td></tr>
+        <tr><td style="padding:8px 28px">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            {% for item in order.items.all %}
+            <tr>
+              <td style="padding:10px 0;border-bottom:1px solid #e4e4e4">
+                <strong>{{ item.product_name }}</strong><br>
+                <span style="color:#7a7a7a;font-size:13px">{{ item.size }} · {{ item.color }} · {{ item.quantity }} u.</span>
+              </td>
+              <td align="right" style="padding:10px 0;border-bottom:1px solid #e4e4e4;white-space:nowrap">{{ item.subtotal_formatted }}</td>
+            </tr>
+            {% endfor %}
+            <tr><td style="padding-top:12px;color:#7a7a7a">Subtotal</td><td align="right" style="padding-top:12px">{{ order.subtotal_formatted }}</td></tr>
+            <tr><td style="color:#7a7a7a">Despacho</td><td align="right">{{ order.shipping_cost_formatted }}</td></tr>
+            <tr><td style="padding-top:8px;font-size:18px;font-weight:bold">Total</td><td align="right" style="padding-top:8px;font-size:18px;font-weight:bold">{{ order.total_formatted }}</td></tr>
+          </table>
+        </td></tr>
+        <tr><td style="padding:16px 28px">
+          <p style="margin:0 0 4px;font-weight:bold">Despacho</p>
+          <p style="margin:0;color:#4a4a4a;line-height:1.5">
+            {{ order.customer_full_name }}<br>{{ order.full_shipping_address }}<br>
+            Plazo estimado: 2 a 5 días hábiles.
+          </p>
+        </td></tr>
+        <tr><td style="padding:16px 28px 32px;text-align:center">
+          <a href="{{ order_link }}" style="display:inline-block;background:#c8ff2e;color:#1a2200;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:999px">Ver mi pedido</a>
+        </td></tr>
+        <tr><td style="background:#f8f8f8;padding:18px 28px;color:#7a7a7a;font-size:12px;text-align:center;line-height:1.5">
+          {% if store.contact_email %}¿Dudas? Responde este correo o escríbenos a {{ store.contact_email }}.<br>{% endif %}
+          {{ store.store_name }}{% if store.legal_name %} · {{ store.legal_name }}{% if store.rut %} · RUT {{ store.rut }}{% endif %}{% endif %}
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

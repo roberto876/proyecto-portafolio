@@ -1,0 +1,44 @@
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <div class="overlay" data-close-panel></div>
+  <nav class="mobile-menu__panel" aria-label="Menú móvil">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <span class="logo">{% include 'partials/logo.html' %}</span>
+      <button type="button" class="icon-btn" data-close-panel aria-label="Cerrar menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <a class="mobile-menu__link" href="{% url 'store:home' %}">Inicio</a>
+    <a class="mobile-menu__link" href="{% url 'store:product_list' %}">Tienda</a>
+    <a class="mobile-menu__link" href="{% url 'store:product_list' %}?genero=H">Hombre</a>
+    <a class="mobile-menu__link" href="{% url 'store:product_list' %}?genero=M">Mujer</a>
+    <a class="mobile-menu__link" href="{% url 'store:offers' %}">Ofertas</a>
+
+    {% if nav_categories %}
+      <p class="eyebrow" style="margin-top:1.5rem">Categorías</p>
+      {% for category in nav_categories %}
+        <a class="mobile-menu__sub" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+      {% endfor %}
+    {% endif %}
+
+    <p class="eyebrow" style="margin-top:1.5rem">Cuenta</p>
+    {% if user.is_authenticated %}
+      <a class="mobile-menu__sub" href="{% url 'accounts:profile' %}">Mi perfil</a>
+      <a class="mobile-menu__sub" href="{% url 'orders:list' %}">Mis pedidos</a>
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="mobile-menu__sub" style="text-align:left">Cerrar sesión</button>
+      </form>
+    {% else %}
+      <a class="mobile-menu__sub" href="{% url 'accounts:login' %}">Iniciar sesión</a>
+      <a class="mobile-menu__sub" href="{% url 'accounts:register' %}">Crear cuenta</a>
+    {% endif %}
+
+    <p class="eyebrow" style="margin-top:1.5rem">Ayuda</p>
+    <a class="mobile-menu__sub" href="{% url 'store:about' %}">Sobre nosotros</a>
+    <a class="mobile-menu__sub" href="{% url 'store:shipping' %}">Envíos y devoluciones</a>
+    <a class="mobile-menu__sub" href="{% url 'store:contact' %}">Contacto</a>
+  </nav>
+</div>

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block page_id %}payment-redirect{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="result">
+    <div class="result__icon result__icon--ok" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/>
+      </svg>
+    </div>
+
+    <h1 style="font-size:var(--step-3)">Te llevamos a Webpay</h1>
+    <p class="text-muted" style="margin-top:1rem">
+      Estás a punto de pagar la orden <strong>{{ order.order_number }}</strong>
+      por <strong>{{ order.total_formatted }}</strong> en el sitio seguro de
+      Transbank.
+    </p>
+
+    {# Transbank exige entregar el token por POST al formulario de pago. #}
+    <form method="post" action="{{ webpay_url }}" id="webpay-form">
+      <input type="hidden" name="token_ws" value="{{ token }}">
+      <button type="submit" class="btn btn--primary btn--lg" style="margin-top:2rem">
+        Continuar al pago seguro
+      </button>
+    </form>
+
+    <p class="text-muted" style="font-size:0.78rem;margin-top:1.5rem">
+      Si no avanzas automáticamente, pulsa el botón.
+      {{ store.store_name }} no recibe ni almacena los datos de tu tarjeta.
+    </p>
+
+    <p style="margin-top:1.5rem">
+      <a href="{% url 'orders:detail' order.order_number %}" class="text-muted"
+         style="font-size:var(--step--1);text-decoration:underline">
+        Volver a la orden
+      </a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/webpay-redirect.js' %}" defer></script>
+{% endblock %}

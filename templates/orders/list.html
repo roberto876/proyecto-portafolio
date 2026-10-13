@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load store_extras %}
+
+{% block page_id %}orders{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 4rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'accounts:profile' %}">Mi cuenta</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">Mis pedidos</span>
+  </nav>
+
+  <h1 style="margin-bottom:2rem">Mis pedidos</h1>
+
+  {% if orders %}
+    {% for order in orders %}
+      <article class="order-card">
+        <div class="order-card__head">
+          <div>
+            <a href="{{ order.get_absolute_url }}" style="font-weight:700">
+              Orden {{ order.order_number }}
+            </a>
+            <p class="text-muted" style="font-size:var(--step--1)">
+              {{ order.created_at|date:"d/m/Y" }} · {{ order.total_units }} artículo{{ order.total_units|pluralize }}
+            </p>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+            {% include 'partials/order_status.html' %}
+            <span class="price">{{ order.total_formatted }}</span>
+          </div>
+        </div>
+
+        <div class="order-card__thumbs">
+          {% for item in order.items.all|slice:":6" %}
+            {% if item.image %}
+              <img src="{{ item.image }}" alt="{{ item.product_name }}" loading="lazy"
+                   width="108" height="132" title="{{ item.product_name }}">
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap">
+          <a class="btn btn--outline btn--sm" href="{{ order.get_absolute_url }}">Ver detalle</a>
+          {% if order.is_pending_payment %}
+            <a class="btn btn--primary btn--sm" href="{% url 'payments:start' order.order_number %}">
+              Pagar ahora
+            </a>
+          {% elif order.status == 'PAYMENT_REJECTED' %}
+            <a class="btn btn--primary btn--sm" href="{% url 'payments:start' order.order_number %}">
+              Reintentar pago
+            </a>
+          {% endif %}
+        </div>
+      </article>
+    {% endfor %}
+
+    {% include 'partials/pagination.html' %}
+  {% else %}
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/>
+      </svg>
+      <h2>Aún no tienes pedidos</h2>
+      <p>Cuando hagas tu primera compra aparecerá aquí, con su estado y seguimiento.</p>
+      <a class="btn btn--primary btn--lg" href="{% url 'store:product_list' %}">Ir a la tienda</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

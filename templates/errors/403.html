@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}403 — Acceso denegado{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="error-page">
+    <p class="error-page__code">403</p>
+    <h1 style="margin-top:1rem">Acceso denegado</h1>
+    <p class="text-muted" style="margin-top:1rem;max-width:46ch;margin-inline:auto">
+      No tienes permiso para ver esta página.
+    </p>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:2rem">
+      <a class="btn btn--primary btn--lg" href="{% url 'store:home' %}">Volver al inicio</a>
+      <a class="btn btn--outline btn--lg" href="{% url 'store:product_list' %}">Ir a la tienda</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

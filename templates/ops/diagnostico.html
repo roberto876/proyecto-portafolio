@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Estado de la tienda | {{ site_title|default:"Administración" }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Inicio</a> › Estado de la tienda
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .gf-status { max-width: 860px; }
+  .gf-banner { padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 15px; }
+  .gf-banner--ok { background: #e7f7ec; color: #14532d; }
+  .gf-banner--warning { background: #fff7e0; color: #78350f; }
+  .gf-banner--error { background: #fde8e8; color: #7f1d1d; }
+  .gf-check { display: flex; gap: 14px; padding: 14px 4px; border-bottom: 1px solid var(--hairline-color, #e4e4e4); }
+  .gf-dot { flex: 0 0 14px; height: 14px; border-radius: 50%; margin-top: 3px; }
+  .gf-dot--ok { background: #16a34a; }
+  .gf-dot--warning { background: #d97706; }
+  .gf-dot--error { background: #dc2626; }
+  .gf-dot--info { background: #2563eb; }
+  .gf-check h3 { margin: 0 0 2px; font-size: 14px; }
+  .gf-check p { margin: 0; }
+  .gf-fix { margin-top: 4px !important; font-weight: 600; }
+</style>
+
+<div class="gf-status">
+  <h1>Estado de la tienda</h1>
+
+  {% if overall == 'ok' %}
+    <div class="gf-banner gf-banner--ok">Todo en orden. La tienda está lista para vender.</div>
+  {% elif overall == 'warning' %}
+    <div class="gf-banner gf-banner--warning">La tienda funciona, pero hay puntos por completar. Revisa los marcados en naranja.</div>
+  {% else %}
+    <div class="gf-banner gf-banner--error">Hay un problema que impide operar con normalidad. Revisa lo marcado en rojo.</div>
+  {% endif %}
+
+  {% for check in checks %}
+    <div class="gf-check">
+      <span class="gf-dot gf-dot--{{ check.level }}" aria-hidden="true"></span>
+      <div>
+        <h3>{{ check.title }}</h3>
+        <p>{{ check.message }}</p>
+        {% if check.fix %}<p class="gf-fix">→ {{ check.fix }}</p>{% endif %}
+      </div>
+    </div>
+  {% endfor %}
+
+  <p style="margin-top:20px">
+    <a class="button" href="{% url 'admin:store_storesettings_changelist' %}">Ajustes de la tienda</a>
+    <a class="button" href="{% url 'admin:index' %}">Volver al panel</a>
+  </p>
+</div>
+{% endblock %}

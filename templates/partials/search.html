@@ -1,0 +1,22 @@
+<div class="search" id="search-panel" aria-hidden="true">
+  <div class="overlay" data-close-panel></div>
+  <div class="search__panel">
+    <div class="container">
+      <form class="search__form" method="get" action="{% url 'store:product_list' %}" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+        <label class="sr-only" for="search-input">Buscar productos</label>
+        <input class="search__input" id="search-input" type="search" name="q"
+               placeholder="Buscar productos…" autocomplete="off" maxlength="100">
+        <button type="submit" class="btn btn--dark btn--sm">Buscar</button>
+        <button type="button" class="icon-btn" data-close-panel aria-label="Cerrar búsqueda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </form>
+      <div class="search__results" id="search-results" aria-live="polite"></div>
+    </div>
+  </div>
+</div>

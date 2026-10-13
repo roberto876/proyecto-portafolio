@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 5rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">Envíos y devoluciones</span>
+  </nav>
+
+  <article style="max-width:70ch">
+    <h1 style="font-size:var(--step-3)">Envíos y devoluciones</h1>
+    <p class="text-muted" style="margin-top:1rem">Todo lo que necesitas saber sobre plazos, costos y cambios.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Plazos de entrega</h2>
+      <p style="margin-top:.75rem">Región Metropolitana: 2 a 3 días hábiles. Regiones: 3 a 5 días hábiles. Zonas extremas y localidades apartadas pueden tomar hasta 7 días hábiles.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Costo de despacho</h2>
+      <p style="margin-top:.75rem">El costo se calcula y se muestra antes de pagar. Las compras que superan el monto indicado en el sitio tienen despacho sin costo a todo Chile, sin necesidad de códigos.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Seguimiento</h2>
+      <p style="margin-top:.75rem">Cuando tu pedido sale de bodega actualizamos su estado a Enviada. Puedes revisarlo en cualquier momento desde tu historial de pedidos.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Cambios de talla o color</h2>
+      <p style="margin-top:.75rem">Tienes 30 días corridos desde la recepción. La prenda debe estar sin uso, sin lavar y con su etiqueta. El primer cambio por talla no tiene costo de despacho.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Devoluciones</h2>
+      <p style="margin-top:.75rem">Si el producto llega con una falla de fabricación, lo reponemos o devolvemos el dinero íntegro, incluido el despacho. Escríbenos con el número de orden y fotos del problema.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">Reembolsos</h2>
+      <p style="margin-top:.75rem">Los reembolsos se realizan al mismo medio de pago utilizado y pueden tardar entre 5 y 10 días hábiles en reflejarse, según tu banco.</p>
+    <p class="text-muted" style="margin-top:2.5rem;font-size:var(--step--1)">
+      Última actualización: {% now "F Y" %}.
+      ¿Dudas? Escríbenos desde <a href="{% url 'store:contact' %}" style="text-decoration:underline">contacto</a>.
+    </p>
+  </article>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block page_id %}contact{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 5rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">Contacto</span>
+  </nav>
+
+  <div class="checkout-layout">
+    <div>
+      <h1 style="font-size:var(--step-3)">Hablemos</h1>
+      <p class="text-muted" style="margin-top:.75rem">
+        Escríbenos por cambios, seguimiento de pedidos o cualquier duda sobre
+        tallas. Respondemos dentro de 24 horas hábiles.
+      </p>
+
+      <form method="post" class="form-card" style="margin-top:2rem" novalidate>
+        {% csrf_token %}
+        <div class="form-grid form-grid--2">
+          {% for field in form %}
+            {% if field.name == 'website' %}
+              {# Campo señuelo antispam: invisible para las personas. #}
+              {{ field }}
+            {% else %}
+              <div class="field {% if field.errors %}has-error{% endif %}"
+                   {% if field.name == 'subject' or field.name == 'message' %}style="grid-column:1/-1"{% endif %}>
+                <label class="field__label" for="{{ field.id_for_label }}">
+                  {{ field.label }}<span class="req">*</span>
+                </label>
+                {{ field }}
+                {% for error in field.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn--primary btn--lg" style="margin-top:1.5rem">
+          Enviar mensaje
+        </button>
+      </form>
+    </div>
+
+    <aside class="summary">
+      <h2 style="font-size:var(--step-1);margin-bottom:1rem">Otros canales</h2>
+      <dl class="data-list">
+        {% if store.contact_email %}
+          <div class="data-list__row"><dt>Email</dt><dd><a href="mailto:{{ store.contact_email }}">{{ store.contact_email }}</a></dd></div>
+        {% endif %}
+        {% if store.contact_phone %}
+          <div class="data-list__row"><dt>Teléfono</dt><dd>{{ store.contact_phone }}</dd></div>
+        {% endif %}
+        {% if store.whatsapp_url %}
+          <div class="data-list__row"><dt>WhatsApp</dt><dd><a href="{{ store.whatsapp_url }}" target="_blank" rel="noopener noreferrer">Escríbenos</a></dd></div>
+        {% endif %}
+        <div class="data-list__row"><dt>Horario</dt><dd>Lun a Vie, 9:00–18:00</dd></div>
+        <div class="data-list__row"><dt>Despachos</dt><dd>Todo Chile</dd></div>
+      </dl>
+
+      <h2 style="font-size:var(--step-1);margin:1.5rem 0 1rem">Preguntas frecuentes</h2>
+      <div class="accordion" style="border-top:none">
+        <details>
+          <summary>¿Cuánto demora mi pedido?</summary>
+          <div class="accordion__body">Entre 2 y 5 días hábiles según región.</div>
+        </details>
+        <details>
+          <summary>¿Puedo cambiar la talla?</summary>
+          <div class="accordion__body">
+            Sí, tienes 30 días y el primer cambio no tiene costo de envío.
+          </div>
+        </details>
+        <details>
+          <summary>¿Es seguro pagar aquí?</summary>
+          <div class="accordion__body">
+            El pago ocurre en Transbank Webpay Plus. No recibimos ni guardamos
+            los datos de tu tarjeta.
+          </div>
+        </details>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

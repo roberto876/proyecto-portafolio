@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block page_id %}profile{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 4rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">Mi cuenta</span>
+  </nav>
+
+  <header style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;margin-bottom:2rem">
+    <div>
+      <h1 style="font-size:var(--step-3)">Hola, {{ user.first_name|default:user.username }}</h1>
+      <p class="text-muted" style="margin-top:.25rem">{{ user.email }}</p>
+    </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <a class="btn btn--outline btn--sm" href="{% url 'orders:list' %}">Mis pedidos</a>
+      <a class="btn btn--outline btn--sm" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a>
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn--dark btn--sm">Cerrar sesión</button>
+      </form>
+    </div>
+  </header>
+
+  <form method="post" class="form-card" style="max-width:720px" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert--error" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <h2 class="fieldset-title">Datos personales</h2>
+    <div class="form-grid form-grid--2">
+      {% for field in form %}
+        {% if field.name == 'first_name' or field.name == 'last_name' or field.name == 'email' or field.name == 'phone' %}
+          <div class="field {% if field.errors %}has-error{% endif %}">
+            <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <h2 class="fieldset-title" style="margin-top:2rem">Dirección de despacho predeterminada</h2>
+    <p class="text-muted" style="font-size:var(--step--1);margin-bottom:1rem">
+      La usaremos para completar tu próximo checkout más rápido.
+    </p>
+    <div class="form-grid form-grid--2">
+      {% for field in form %}
+        {% if field.name == 'region' or field.name == 'commune' or field.name == 'address' or field.name == 'address_number' %}
+          <div class="field {% if field.errors %}has-error{% endif %}"
+               {% if field.name == 'address' %}style="grid-column:1/-1"{% endif %}>
+            <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--lg" style="margin-top:1.5rem">
+      Guardar cambios
+    </button>
+  </form>
+</div>
+
+{{ regions_json|json_script:"regions-data" }}
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/checkout.js' %}" defer></script>
+{% endblock %}

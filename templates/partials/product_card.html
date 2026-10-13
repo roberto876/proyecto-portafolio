@@ -1,0 +1,63 @@
+{% load store_extras %}
+{# Tarjeta de producto reutilizable. Espera `product` en el contexto. #}
+<article class="product-card" data-reveal="up">
+  <div class="product-card__media">
+    <div class="product-card__flags">
+      {% if product.is_on_sale %}
+        <span class="badge badge--sale">-{{ product.discount_percentage }}%</span>
+      {% endif %}
+      {% if product.is_featured %}
+        <span class="badge badge--new">Destacado</span>
+      {% endif %}
+      {% if not product.in_stock %}
+        <span class="badge badge--out">Agotado</span>
+      {% endif %}
+    </div>
+
+    <a href="{{ product.get_absolute_url }}" aria-label="Ver {{ product.name }}">
+      {% if product.main_image %}
+        <img src="{{ product.main_image }}" alt="{{ product.name }}"
+             loading="lazy" decoding="async" width="600" height="800">
+      {% else %}
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+             alt="{{ product.name }}" width="600" height="800">
+      {% endif %}
+    </a>
+
+    {% if product.in_stock %}
+      <a class="btn btn--dark btn--sm btn--block product-card__quick"
+         href="{{ product.get_absolute_url }}">Elegir talla</a>
+    {% endif %}
+  </div>
+
+  <div class="product-card__body">
+    <p class="product-card__cat">{{ product.category.name }}</p>
+    <h3 class="product-card__name">
+      <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+    </h3>
+
+    <div class="product-card__prices">
+      <span class="price">{{ product.price|clp }}</span>
+      {% if product.is_on_sale %}
+        <span class="price--old">{{ product.compare_price|clp }}</span>
+      {% endif %}
+    </div>
+
+    {% if product.available_sizes %}
+      <div class="product-card__sizes" aria-label="Tallas disponibles">
+        {% for size in product.available_sizes %}
+          <span class="size-chip">{{ size }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if product.available_colors %}
+      <div class="product-card__swatches" aria-label="Colores disponibles">
+        {% for color in product.available_colors|slice:":5" %}
+          <span class="swatch-dot" style="background:{{ color.color_hex }}"
+                title="{{ color.color }}"></span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</article>

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load store_extras %}
+
+{% block page_id %}order{% endblock %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 4rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    {% if user.is_authenticated %}
+      <a href="{% url 'orders:list' %}">Mis pedidos</a> <span aria-hidden="true">/</span>
+    {% else %}
+      <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    {% endif %}
+    <span aria-current="page">Orden {{ order.order_number }}</span>
+  </nav>
+
+  <header style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;margin-bottom:2rem">
+    <div>
+      <h1 style="font-size:var(--step-3)">Orden {{ order.order_number }}</h1>
+      <p class="text-muted" style="margin-top:.25rem">
+        Creada el {{ order.created_at|date:"d/m/Y \a \l\a\s H:i" }}
+      </p>
+    </div>
+    {% include 'partials/order_status.html' %}
+  </header>
+
+  {% if order.is_pending_payment %}
+    <div class="alert alert--warning">
+      <div>
+        <strong>Pago pendiente.</strong> Esta orden aún no se ha pagado.
+        <a class="btn btn--primary btn--sm" style="margin-top:.75rem"
+           href="{% url 'payments:start' order.order_number %}">Pagar ahora</a>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="cart-layout">
+    <div>
+      <h2 style="font-size:var(--step-1);margin-bottom:1rem">Productos</h2>
+      {% for item in order.items.all %}
+        <div class="cart-line">
+          {% if item.image %}
+            <img src="{{ item.image }}" alt="{{ item.product_name }}" loading="lazy"
+                 width="220" height="293">
+          {% else %}
+            <div style="aspect-ratio:3/4;background:var(--gray-100);border-radius:var(--radius)"></div>
+          {% endif %}
+          <div>
+            <h3 style="font-family:var(--font-body);font-size:var(--step-0);font-weight:600;text-transform:none;letter-spacing:0">
+              {% if item.product %}
+                <a href="{{ item.product.get_absolute_url }}">{{ item.product_name }}</a>
+              {% else %}
+                {{ item.product_name }}
+              {% endif %}
+            </h3>
+            <p class="text-muted" style="font-size:var(--step--1);margin-top:.25rem">
+              {{ item.size }} · {{ item.color }} · SKU {{ item.sku }}
+            </p>
+            <p class="text-muted" style="font-size:var(--step--1)">
+              {{ item.unit_price_formatted }} × {{ item.quantity }}
+            </p>
+          </div>
+          <p class="price">{{ item.subtotal_formatted }}</p>
+        </div>
+      {% endfor %}
+
+      <div class="form-card" style="margin-top:2rem">
+        <h2 class="fieldset-title">Despacho</h2>
+        <dl class="data-list">
+          <div class="data-list__row">
+            <dt>Destinatario</dt><dd>{{ order.customer_full_name }}</dd>
+          </div>
+          <div class="data-list__row">
+            <dt>Email</dt><dd>{{ order.customer_email }}</dd>
+          </div>
+          <div class="data-list__row">
+            <dt>Teléfono</dt><dd>{{ order.customer_phone }}</dd>
+          </div>
+          <div class="data-list__row">
+            <dt>Dirección</dt><dd>{{ order.full_shipping_address }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <aside class="summary">
+      <h2 style="font-size:var(--step-1);margin-bottom:1rem">Totales</h2>
+      <div class="summary__row"><span>Subtotal</span><span>{{ order.subtotal_formatted }}</span></div>
+      <div class="summary__row"><span>Despacho</span><span>{{ order.shipping_cost_formatted }}</span></div>
+      <div class="summary__row summary__row--total"><span>Total</span><span>{{ order.total_formatted }}</span></div>
+
+      {% if payment and payment.is_approved %}
+        <div style="margin-top:1.5rem;border-top:1px solid var(--gray-300);padding-top:1rem">
+          <h3 style="font-size:var(--step-0);margin-bottom:.75rem">Pago</h3>
+          <dl class="data-list">
+            <div class="data-list__row">
+              <dt>Medio</dt><dd>{{ payment.payment_type_display }}</dd>
+            </div>
+            <div class="data-list__row">
+              <dt>Tarjeta</dt><dd>{{ payment.masked_card }}</dd>
+            </div>
+            <div class="data-list__row">
+              <dt>Autorización</dt><dd>{{ payment.authorization_code }}</dd>
+            </div>
+            {% if order.paid_at %}
+              <div class="data-list__row">
+                <dt>Fecha</dt><dd>{{ order.paid_at|date:"d/m/Y H:i" }}</dd>
+              </div>
+            {% endif %}
+          </dl>
+        </div>
+      {% endif %}
+
+      <a class="btn btn--outline btn--block btn--sm" style="margin-top:1.5rem"
+         href="{% url 'store:product_list' %}">Volver a la tienda</a>
+    </aside>
+  </div>
+</div>
+{% endblock %}

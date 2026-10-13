@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load store_extras %}
+
+{% block page_id %}payment-failure{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="result">
+    <div class="result__icon result__icon--fail" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </div>
+
+    <h1>El pago no se completó</h1>
+    <p class="text-muted" style="margin-top:1rem">{{ reason }}</p>
+
+    <div class="result__panel">
+      <dl class="data-list">
+        <div class="data-list__row">
+          <dt>Número de orden</dt><dd>{{ order.order_number }}</dd>
+        </div>
+        <div class="data-list__row">
+          <dt>Total</dt><dd>{{ order.total_formatted }}</dd>
+        </div>
+        <div class="data-list__row">
+          <dt>Estado</dt>
+          <dd>{% include 'partials/order_status.html' %}</dd>
+        </div>
+      </dl>
+
+      <p class="text-muted" style="font-size:var(--step--1);margin-top:1rem">
+        No se realizó ningún cargo a tu tarjeta. Tu pedido quedó guardado y
+        puedes intentarlo nuevamente cuando quieras.
+      </p>
+    </div>
+
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:2rem">
+      {% if order.can_retry_payment %}
+        <a class="btn btn--primary" href="{% url 'payments:start' order.order_number %}">
+          Intentar nuevamente
+        </a>
+      {% endif %}
+      <a class="btn btn--outline" href="{% url 'cart:detail' %}">Volver al carrito</a>
+    </div>
+
+    <p style="margin-top:1.5rem">
+      <a href="{% url 'store:contact' %}" class="text-muted"
+         style="font-size:var(--step--1);text-decoration:underline">
+        ¿Necesitas ayuda? Escríbenos
+      </a>
+    </p>
+  </div>
+</div>
+{% endblock %}

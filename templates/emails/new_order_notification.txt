@@ -1,0 +1,16 @@
+¡Nueva venta en {{ store.store_name }}!
+
+Orden:   {{ order.order_number }}
+Total:   {{ order.total_formatted }}
+Cliente: {{ order.customer_full_name }} <{{ order.customer_email }}> · {{ order.customer_phone }}
+
+DESPACHAR A
+{{ order.full_shipping_address }}
+
+PRODUCTOS
+{% for item in order.items.all %}- {{ item.quantity }} x {{ item.product_name }} ({{ item.size }} / {{ item.color }}) · SKU {{ item.sku }}
+{% endfor %}
+Gestiona la orden en el panel de administración:
+{{ admin_link }}
+
+Cuando la despaches, cambia su estado a «Enviada» para que el cliente lo vea.

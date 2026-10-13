@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load store_extras %}
+
+{% block page_id %}catalog{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">{% if is_offers_view %}Ofertas{% else %}Catálogo{% endif %}</span>
+  </nav>
+
+  <header style="margin-bottom:2rem">
+    <h1>{% if is_offers_view %}Ofertas{% else %}Catálogo{% endif %}</h1>
+    <p class="text-muted" style="margin-top:.5rem">
+      {% if filters.query %}
+        {{ page_obj.paginator.count }} resultado{{ page_obj.paginator.count|pluralize }} para “{{ filters.query }}”
+      {% else %}
+        {{ page_obj.paginator.count }} producto{{ page_obj.paginator.count|pluralize }} disponible{{ page_obj.paginator.count|pluralize }}
+      {% endif %}
+    </p>
+  </header>
+
+  <div class="catalog">
+    {# ===== Filtros ===================================================== #}
+    <button type="button" class="btn btn--outline btn--sm filters-toggle"
+            data-toggle-filters aria-expanded="false" aria-controls="filters">
+      Filtrar y ordenar
+    </button>
+
+    <aside class="filters" id="filters" aria-label="Filtros del catálogo">
+      {% if filters.has_filters %}
+        <a class="btn btn--dark btn--sm btn--block" style="margin-bottom:1rem"
+           href="{% if is_offers_view %}{% url 'store:offers' %}{% else %}{% url 'store:product_list' %}{% endif %}">
+          Limpiar filtros
+        </a>
+      {% endif %}
+
+      <div class="filters__group">
+        <h2 class="filters__title">Categoría</h2>
+        <ul class="filters__list">
+          <li>
+            <a class="filters__option {% if not filters.category %}is-active{% endif %}"
+               href="?{% query_replace categoria=None pagina=None %}">Todas</a>
+          </li>
+          {% for category in all_categories %}
+            <li>
+              <a class="filters__option {% if filters.category == category.slug %}is-active{% endif %}"
+                 href="?{% query_replace categoria=category.slug pagina=None %}">{{ category.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="filters__group">
+        <h2 class="filters__title">Género</h2>
+        <div class="filters__chips">
+          <a class="chip {% if not filters.gender %}is-active{% endif %}"
+             href="?{% query_replace genero=None pagina=None %}">Todos</a>
+          <a class="chip {% if filters.gender == 'H' %}is-active{% endif %}"
+             href="?{% query_replace genero='H' pagina=None %}">Hombre</a>
+          <a class="chip {% if filters.gender == 'M' %}is-active{% endif %}"
+             href="?{% query_replace genero='M' pagina=None %}">Mujer</a>
+          <a class="chip {% if filters.gender == 'U' %}is-active{% endif %}"
+             href="?{% query_replace genero='U' pagina=None %}">Unisex</a>
+        </div>
+      </div>
+
+      {% if all_sizes %}
+      <div class="filters__group">
+        <h2 class="filters__title">Talla</h2>
+        <div class="filters__chips">
+          {% for size in all_sizes %}
+            <a class="chip {% if filters.size == size %}is-active{% endif %}"
+               href="?{% query_replace talla=size pagina=None %}">{{ size }}</a>
+          {% endfor %}
+          {% if filters.size %}
+            <a class="chip" href="?{% query_replace talla=None pagina=None %}">Quitar</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if all_colors %}
+      <div class="filters__group">
+        <h2 class="filters__title">Color</h2>
+        <div class="filters__chips">
+          {% for color in all_colors %}
+            <a class="chip chip--color {% if filters.color|lower == color.color|lower %}is-active{% endif %}"
+               href="?{% query_replace color=color.color pagina=None %}">
+              <span class="swatch-dot" style="background:{{ color.color_hex }}"></span>
+              {{ color.color }}
+            </a>
+          {% endfor %}
+          {% if filters.color %}
+            <a class="chip" href="?{% query_replace color=None pagina=None %}">Quitar</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="filters__group">
+        <h2 class="filters__title">Precio</h2>
+        <form method="get" class="form-grid" style="gap:.75rem">
+          {# Conserva los demás filtros al enviar el rango de precio. #}
+          {% if filters.query %}<input type="hidden" name="q" value="{{ filters.query }}">{% endif %}
+          {% if filters.category %}<input type="hidden" name="categoria" value="{{ filters.category }}">{% endif %}
+          {% if filters.gender %}<input type="hidden" name="genero" value="{{ filters.gender }}">{% endif %}
+          {% if filters.size %}<input type="hidden" name="talla" value="{{ filters.size }}">{% endif %}
+          {% if filters.color %}<input type="hidden" name="color" value="{{ filters.color }}">{% endif %}
+          <input type="hidden" name="orden" value="{{ filters.sort }}">
+
+          <div style="display:flex;gap:.5rem">
+            <label class="sr-only" for="precio_min">Precio mínimo</label>
+            <input class="form-input" id="precio_min" type="number" name="precio_min"
+                   min="0" step="1000" placeholder="Mín" value="{{ filters.price_min|default_if_none:'' }}">
+            <label class="sr-only" for="precio_max">Precio máximo</label>
+            <input class="form-input" id="precio_max" type="number" name="precio_max"
+                   min="0" step="1000" placeholder="Máx" value="{{ filters.price_max|default_if_none:'' }}">
+          </div>
+          <button type="submit" class="btn btn--outline btn--sm">Aplicar</button>
+        </form>
+      </div>
+    </aside>
+
+    {# ===== Resultados =================================================== #}
+    <div>
+      <div class="catalog__toolbar">
+        <p class="text-muted" style="font-size:var(--step--1)">
+          Mostrando {{ page_obj.start_index }}–{{ page_obj.end_index }}
+          de {{ page_obj.paginator.count }}
+        </p>
+
+        <div class="filters__chips">
+          {% for key, label in sort_labels.items %}
+            <a class="chip {% if filters.sort == key %}is-active{% endif %}"
+               href="?{% query_replace orden=key pagina=None %}">{{ label }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if products %}
+        <div class="product-grid">
+          {% for product in products %}
+            {% include 'partials/product_card.html' %}
+          {% endfor %}
+        </div>
+        {% include 'partials/pagination.html' %}
+      {% else %}
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+          </svg>
+          <h2>Sin resultados</h2>
+          <p>No encontramos productos con esos filtros. Prueba a quitar alguno o busca otra cosa.</p>
+          <a class="btn btn--dark" href="{% url 'store:product_list' %}">Ver todo el catálogo</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/catalog.js' %}" defer></script>
+{% endblock %}

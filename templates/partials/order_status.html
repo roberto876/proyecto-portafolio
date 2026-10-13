@@ -1,0 +1,20 @@
+{# Insignia de estado de una orden. Espera `order` en el contexto. #}
+{% if order.status == 'PAID' %}
+  <span class="badge badge--success">Pagada</span>
+{% elif order.status == 'PROCESSING' %}
+  <span class="badge badge--info">En preparación</span>
+{% elif order.status == 'SHIPPED' %}
+  <span class="badge badge--info">Enviada</span>
+{% elif order.status == 'DELIVERED' %}
+  <span class="badge badge--success">Entregada</span>
+{% elif order.status == 'PENDING_PAYMENT' %}
+  <span class="badge badge--warning">Pendiente de pago</span>
+{% elif order.status == 'PAYMENT_REJECTED' %}
+  <span class="badge badge--danger">Pago no completado</span>
+{% elif order.status == 'CANCELLED' %}
+  <span class="badge badge--muted">Cancelada</span>
+{% elif order.status == 'REFUNDED' %}
+  <span class="badge badge--warning">Reembolsada</span>
+{% else %}
+  <span class="badge">{{ order.get_status_display }}</span>
+{% endif %}

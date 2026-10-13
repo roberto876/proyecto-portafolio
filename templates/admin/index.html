@@ -1,0 +1,13 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px;padding:14px 16px;border-radius:8px;background:var(--darkened-bg, #f8f8f8)">
+  <strong style="margin-right:6px">Accesos rápidos:</strong>
+  <a class="button" href="{% url 'store_status' %}">🩺 Estado de la tienda</a>
+  <a class="button" href="{% url 'admin:store_storesettings_changelist' %}">⚙️ Ajustes de la tienda</a>
+  <a class="button" href="{% url 'admin:store_product_add' %}">➕ Nuevo producto</a>
+  <a class="button" href="{% url 'admin:orders_order_changelist' %}?status__exact=PAID">📦 Pedidos por despachar</a>
+  <a class="button" href="/" target="_blank" rel="noopener">🛍️ Ver la tienda</a>
+</div>
+{{ block.super }}
+{% endblock %}

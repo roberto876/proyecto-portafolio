@@ -1,0 +1,29 @@
+{% load store_extras %}
+{# Paginación que conserva los filtros activos. Espera `page_obj`. #}
+{% if page_obj.paginator.num_pages > 1 %}
+  <nav class="pagination" aria-label="Paginación de resultados">
+    {% if page_obj.has_previous %}
+      <a href="?{% query_replace pagina=page_obj.previous_page_number %}" rel="prev"
+         aria-label="Página anterior">‹</a>
+    {% else %}
+      <span class="is-disabled" aria-hidden="true">‹</span>
+    {% endif %}
+
+    {% for number in page_obj.paginator.page_range %}
+      {% if number == page_obj.number %}
+        <span class="is-current" aria-current="page">{{ number }}</span>
+      {% elif number >= page_obj.number|add:"-2" and number <= page_obj.number|add:"2" %}
+        <a href="?{% query_replace pagina=number %}">{{ number }}</a>
+      {% elif number == 1 or number == page_obj.paginator.num_pages %}
+        <a href="?{% query_replace pagina=number %}">{{ number }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <a href="?{% query_replace pagina=page_obj.next_page_number %}" rel="next"
+         aria-label="Página siguiente">›</a>
+    {% else %}
+      <span class="is-disabled" aria-hidden="true">›</span>
+    {% endif %}
+  </nav>
+{% endif %}

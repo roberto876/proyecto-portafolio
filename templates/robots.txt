@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Rutas privadas o sin valor para indexar.
+Disallow: /admin/
+Disallow: /carrito/
+Disallow: /pedidos/
+Disallow: /pagos/
+Disallow: /cuenta/
+Disallow: /api/
+Disallow: /*/api/
+
+Sitemap: {{ request.scheme }}://{{ request.get_host }}/sitemap.xml

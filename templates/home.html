@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static store_extras %}
+
+{% block page_id %}home{% endblock %}
+
+{% block content %}
+
+{# ===== HERO — 4 capas de profundidad ===================================== #}
+<section class="hero" data-scene="hero">
+  <div class="layer depth-0" data-depth="0" aria-hidden="true">
+    <img class="hero__bg"
+         src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=75&auto=format&fit=crop"
+         alt="" loading="eager" fetchpriority="high" width="1920" height="1280">
+  </div>
+
+  <div class="layer depth-1" data-depth="1" aria-hidden="true">
+    <span class="glow glow--volt pulse-loop"
+          style="width:520px;height:520px;right:-8%;top:8%"></span>
+    <span class="glow glow--cold"
+          style="width:380px;height:380px;left:-6%;bottom:4%;opacity:.35"></span>
+  </div>
+
+  <div class="container layer depth-4" data-depth="4" style="position:relative">
+    <div class="hero__content">
+      <p class="eyebrow" style="color:var(--volt)">Nueva colección 2026</p>
+      <h1 class="hero__title">
+        Entrena.<br>Supera.<span>Evoluciona.</span>
+      </h1>
+      <p class="hero__text">
+        Ropa deportiva técnica diseñada para aguantar tus series más duras.
+        Tejidos que respiran, cortes que acompañan el movimiento.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--lg" href="{% url 'store:product_list' %}">Comprar ahora</a>
+        <a class="btn btn--ghost-light btn--lg" href="#coleccion">Ver colección</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Cinta ============================================================= #}
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    <span>
+      {% if store.free_shipping_enabled %}Envío gratis sobre {{ free_shipping_threshold|clp }} ✱ {% endif %}Pago seguro con Webpay ✱
+      Cambios en 30 días ✱ Despacho a todo Chile ✱
+    </span>
+    <span>
+      {% if store.free_shipping_enabled %}Envío gratis sobre {{ free_shipping_threshold|clp }} ✱ {% endif %}Pago seguro con Webpay ✱
+      Cambios en 30 días ✱ Despacho a todo Chile ✱
+    </span>
+  </div>
+</div>
+
+{# ===== Categorías ======================================================== #}
+{% if categories %}
+<section class="section" id="coleccion">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow" data-reveal="up">Explora</p>
+        <h2 data-reveal="up">Por categoría</h2>
+      </div>
+      <a class="btn btn--outline btn--sm" href="{% url 'store:product_list' %}">Ver todo</a>
+    </div>
+
+    <div class="category-grid">
+      {% for category in categories %}
+        <a class="category-card" href="{{ category.get_absolute_url }}"
+           data-reveal="up" data-reveal-index="{{ forloop.counter0 }}">
+          {% if category.image %}
+            <img src="{{ category.image }}" alt="{{ category.name }}"
+                 loading="lazy" decoding="async" width="500" height="666">
+          {% endif %}
+          <span class="category-card__label">
+            {{ category.name }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Destacados ======================================================== #}
+{% if featured_products %}
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow" data-reveal="up">Lo más pedido</p>
+        <h2 data-reveal="up">Destacados</h2>
+        <p data-reveal="up">Las prendas que más se repiten en los carritos de nuestros clientes.</p>
+      </div>
+      <a class="btn btn--outline btn--sm" href="{% url 'store:product_list' %}?orden=vendidos">Ver más</a>
+    </div>
+
+    <div class="product-grid">
+      {% for product in featured_products %}
+        {% include 'partials/product_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Banner a sangre =================================================== #}
+<section class="showcase">
+  <div class="showcase__media layer depth-0" data-depth="0" aria-hidden="true">
+    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1920&q=75&auto=format&fit=crop"
+         alt="" loading="lazy" decoding="async" width="1920" height="1280">
+  </div>
+  <div class="container">
+    <div class="showcase__content">
+      <p class="eyebrow" data-reveal="up">Tecnología textil</p>
+      <h2 data-reveal="curtain">Hecho para<br>sudar</h2>
+      <p data-reveal="up" style="margin-top:1rem;color:var(--gray-300)">
+        Poliéster reciclado con elastano, costuras planas y secado rápido.
+        Probado en entrenamientos reales, no en un catálogo.
+      </p>
+      <div style="margin-top:2rem" data-reveal="up">
+        <a class="btn btn--primary" href="{% url 'store:product_list' %}">Ver la colección</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Ofertas =========================================================== #}
+{% if sale_products %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow" data-reveal="up">Precio rebajado</p>
+        <h2 data-reveal="up">En oferta</h2>
+      </div>
+      <a class="btn btn--outline btn--sm" href="{% url 'store:offers' %}">Ver todas</a>
+    </div>
+    <div class="product-grid">
+      {% for product in sale_products %}
+        {% include 'partials/product_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Novedades ========================================================= #}
+{% if latest_products %}
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow" data-reveal="up">Recién llegado</p>
+        <h2 data-reveal="up">Novedades</h2>
+      </div>
+      <a class="btn btn--outline btn--sm" href="{% url 'store:product_list' %}?orden=recientes">Ver todo</a>
+    </div>
+    <div class="product-grid">
+      {% for product in latest_products %}
+        {% include 'partials/product_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Promoción ======================================================== #}
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="promo" data-reveal="zoom">
+      <span class="glow glow--volt" style="width:420px;height:420px;left:50%;top:-40%;transform:translateX(-50%)" aria-hidden="true"></span>
+      <div style="position:relative;z-index:2">
+        {% if store.free_shipping_enabled %}
+          <h2 class="promo__title">Envío <span>gratis</span><br>sobre {{ free_shipping_threshold|clp }}</h2>
+          <p>En todo Chile. Sin códigos ni letra chica.</p>
+        {% else %}
+          <h2 class="promo__title">Despacho a <span>todo</span><br>Chile</h2>
+          <p>Pago seguro con Webpay. Cambios en 30 días.</p>
+        {% endif %}
+        <div style="margin-top:1.5rem">
+          <a class="btn btn--primary" href="{% url 'store:product_list' %}">Empezar a comprar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Beneficios ======================================================== #}
+<section class="section section--dark">
+  <div class="container">
+    <div class="benefits">
+      <div class="benefit" data-reveal="up" data-reveal-index="0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+        </svg>
+        <h3>Envíos a todo Chile</h3>
+        <p>Despacho en 2 a 5 días hábiles según región.</p>
+      </div>
+      <div class="benefit" data-reveal="up" data-reveal-index="1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/>
+        </svg>
+        <h3>Pago seguro</h3>
+        <p>Webpay Plus de Transbank. No guardamos tu tarjeta.</p>
+      </div>
+      <div class="benefit" data-reveal="up" data-reveal-index="2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M4 12a8 8 0 0 1 13.7-5.7L20 8"/><path d="M20 4v4h-4"/>
+          <path d="M20 12a8 8 0 0 1-13.7 5.7L4 16"/><path d="M4 20v-4h4"/>
+        </svg>
+        <h3>Cambios y devoluciones</h3>
+        <p>30 días para cambiar talla o color sin costo.</p>
+      </div>
+      <div class="benefit" data-reveal="up" data-reveal-index="3">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="m12 3 2.6 5.6 6.4.9-4.6 4.4 1.1 6.1L12 17l-5.5 3 1.1-6.1L3 9.5l6.4-.9z"/>
+        </svg>
+        <h3>Calidad probada</h3>
+        <p>Tejidos técnicos testeados en entrenamiento real.</p>
+      </div>
+    </div>
+
+    <div class="stat-grid" style="margin-top:4rem">
+      <div data-reveal="up" data-reveal-index="0">
+        <p class="stat__value">+12.000</p>
+        <p class="stat__label">Pedidos despachados</p>
+      </div>
+      <div data-reveal="up" data-reveal-index="1">
+        <p class="stat__value">4,8/5</p>
+        <p class="stat__label">Valoración promedio</p>
+      </div>
+      <div data-reveal="up" data-reveal-index="2">
+        <p class="stat__value">16</p>
+        <p class="stat__label">Regiones con despacho</p>
+      </div>
+      <div data-reveal="up" data-reveal-index="3">
+        <p class="stat__value">30</p>
+        <p class="stat__label">Días para cambios</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

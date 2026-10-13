@@ -1,0 +1,33 @@
+<div class="minicart" id="minicart" aria-hidden="true" aria-label="Carrito de compras">
+  <div class="overlay" data-close-panel></div>
+  <aside class="minicart__panel">
+    <div class="minicart__head">
+      <h3 style="font-size:var(--step-1)">Tu carrito</h3>
+      <button type="button" class="icon-btn" data-close-panel aria-label="Cerrar carrito">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="minicart__body" id="minicart-body" aria-live="polite">
+      <p class="text-muted">Cargando…</p>
+    </div>
+
+    <div class="minicart__foot" id="minicart-foot" hidden>
+      <div class="minicart__totals">
+        <div class="minicart__row">
+          <span>Subtotal</span><span id="minicart-subtotal">—</span>
+        </div>
+        <div class="minicart__row">
+          <span>Despacho</span><span id="minicart-shipping">—</span>
+        </div>
+        <div class="minicart__row minicart__row--total">
+          <span>Total</span><span id="minicart-total">—</span>
+        </div>
+      </div>
+      <a class="btn btn--outline btn--block" href="{% url 'cart:detail' %}">Ver carrito</a>
+      <a class="btn btn--primary btn--block" href="{% url 'orders:checkout' %}">Finalizar compra</a>
+    </div>
+  </aside>
+</div>

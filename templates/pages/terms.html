@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container section" style="padding-block:2rem 5rem">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="{% url 'store:home' %}">Inicio</a> <span aria-hidden="true">/</span>
+    <span aria-current="page">Términos y condiciones</span>
+  </nav>
+
+  <article style="max-width:70ch">
+    <h1 style="font-size:var(--step-3)">Términos y condiciones</h1>
+    <p class="text-muted" style="margin-top:1rem">Estas condiciones regulan la compra de productos en {{ store.store_name }}. Al realizar un pedido aceptas lo aquí descrito.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">1. Sobre la tienda</h2>
+      <p style="margin-top:.75rem">{{ store.store_name }} comercializa ropa deportiva a través de este sitio, con despacho dentro del territorio chileno.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">2. Precios y disponibilidad</h2>
+      <p style="margin-top:.75rem">Todos los precios se expresan en pesos chilenos (CLP) e incluyen IVA. El precio válido es el que muestra el sitio al momento de confirmar la orden. La disponibilidad se valida en el servidor antes de generar el cobro; si un producto se agota durante el proceso, la compra no se completa y no se realiza ningún cargo.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">3. Proceso de compra</h2>
+      <p style="margin-top:.75rem">Al confirmar el checkout se genera una orden en estado pendiente de pago y se reservan las unidades. El pago se procesa en el entorno seguro de Transbank Webpay Plus. La orden solo se considera pagada cuando Transbank confirma la transacción a nuestro servidor.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">4. Despacho</h2>
+      <p style="margin-top:.75rem">Los envíos se realizan a todo Chile en un plazo estimado de 2 a 5 días hábiles según la región de destino. El costo de despacho se muestra antes de pagar y es gratuito sobre el monto indicado en el sitio.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">5. Cambios y devoluciones</h2>
+      <p style="margin-top:.75rem">Dispones de 30 días corridos desde la recepción para solicitar un cambio de talla o color, siempre que la prenda esté sin uso, sin lavar y con su etiqueta original. Se respetan además los derechos del consumidor establecidos por la Ley 19.496.</p>
+      <h2 style="font-size:var(--step-1);margin-top:2rem">6. Responsabilidad</h2>
+      <p style="margin-top:.75rem">No respondemos por usos del producto distintos a los previstos ni por daños derivados del incumplimiento de las instrucciones de cuidado de cada prenda.</p>
+    <p class="text-muted" style="margin-top:2.5rem;font-size:var(--step--1)">
+      Última actualización: {% now "F Y" %}.
+      ¿Dudas? Escríbenos desde <a href="{% url 'store:contact' %}" style="text-decoration:underline">contacto</a>.
+    </p>
+  </article>
+</div>
+{% endblock %}
