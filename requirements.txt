@@ -21,3 +21,6 @@ transbank-sdk==6.1.0
 # lo importa directamente (subida de fotos a Supabase Storage), así que se
 # declara de forma explícita.
 requests==2.34.2
+
+
+gunicorn
